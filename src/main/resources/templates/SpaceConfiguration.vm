@@ -1,0 +1,197 @@
+<html>
+    <head>
+        <title>$action.getText("link.preview.confluence.configuration.page.name")</title>
+        <meta name="decorator" content="main"/>
+        
+        <link rel="stylesheet" href="$req.contextPath/download/resources/com.xpandit.plugins.linkpreview-confluence/css/ace/editor/ace-editor.css"/>
+		<link rel="stylesheet" href="$req.contextPath/download/resources/com.xpandit.plugins.linkpreview-confluence/css/ace/editor/ace-editor-fixer.css"/>
+		
+    </head>
+    
+    #applyDecorator("root")
+        #decoratorParam("helper" $action.helper)
+        #decoratorParam("context" "space-administration") ## Name of the tab to highlight: space-operations is also valid.
+
+        #applyDecorator ("root")
+            #decoratorParam ("context" "spaceadminpanel")
+            #decoratorParam ("selection" "quick-link-admin-link-preview-confluence")
+            #decoratorParam ("selectedSpaceToolsWebItem" "quick-link-tools-attachment-preview")
+            #decoratorParam ("helper" $action.helper)
+
+		<body>
+		<script>
+			function loadJS(src, callback) {
+			    var s = document.createElement('script');
+			    s.src = src;
+			    s.async = true;
+			    s.onreadystatechange = s.onload = function() {
+			        var state = s.readyState;
+			        if (!callback.done && (!state || /loaded|complete/.test(state))) {
+			            callback.done = true;
+			            callback();
+			        }
+			    };
+			    document.getElementsByTagName('head')[0].appendChild(s);
+			}
+			
+			loadJS('$req.contextPath/download/resources/com.xpandit.plugins.linkpreview-confluence/js/ace/editor/ace.js', function() { 
+			   	loadJS('$req.contextPath/download/resources/com.xpandit.plugins.linkpreview-confluence/js/ace/editor/mode-css.js', function() { 
+			   		//Initialize the ace editor component
+			        var editor = ace.edit("apply-css-editor");
+			        var textarea=$('#apply-css');
+		            editor.getSession().setMode("ace/mode/css");
+		            editor.renderer.setShowGutter(false);
+		            editor.renderer.setShowPrintMargin(false);
+		            editor.getSession().setValue(textarea.val());
+				    editor.getSession().on('change', function(){
+				    	textarea.val(editor.getSession().getValue());
+			    	});
+				});
+			});
+		</script>
+            <div id="aui-message-bar"></div>
+	 		<div id="aui-message-bar2" style="display:none;">
+				<div class="aui-message aui-message-warning warning closeable shadowed">
+					<p class="title"><strong>Warning</strong></p>
+					$i18n.getText("link.preview.confluence.content.type.warning")
+					<span class="aui-icon icon-close" role="button" tabindex="0"></span>
+				</div>
+			</div>           
+				<form name="saveconfigurationform" method="POST" action="saveSpaceConfiguration.action?key=$generalUtil.urlEncode($helper.spaceKey)" class="aui">
+					#form_xsrfToken()
+						<h2>$i18n.getText("link.preview.confluence.configuration.space.form.title")</h2>
+						<div class="field-group">
+							<label id="active-label" for="ACTIVE_CONFIGURATION">$i18n.getText("link.preview.confluence.configuration.active")</label>
+							<input type="checkbox" name="ACTIVE_CONFIGURATION" id="active-configuration" #if($activeConfiguration=='true') checked="checked" value="Y" #else value="N" #end >
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.active.description")</div>
+						</div>
+						<div class="field-group">
+							<label id="apply-elements-label" for="APPLY_ELEMENTS">$i18n.getText("link.preview.confluence.configuration.apply.elements")<span class="aui-icon icon-required"></span></label>
+							<textarea rows="4" name="APPLY_ELEMENTS" id="apply-elements" class="textarea long-field">$applyElements</textarea>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.apply.elements.description")</div>
+						</div>
+						
+						<div class="field-group">
+							<label id="image-types-label" for="IMAGE_TYPES">$i18n.getText("link.preview.confluence.configuration.image.file.types")<span class="aui-icon icon-required"></span></label>
+							<textarea rows="4" name="IMAGE_TYPES" id="image-types" class="textarea long-field">$imageTypes</textarea>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.image.file.types.description")</div>
+						</div>
+						
+						<div class="field-group">
+							<label id="pdf-preview-label" for="PDF_PREVIEW">$i18n.getText("link.preview.confluence.configuration.pdf.file.types")<span class="aui-icon icon-required"></span></label>
+							<input type="checkbox" name="PDF_PREVIEW" id="pdf-preview" value="$pdfPreview" #if("Y" == $pdfPreview) checked="checked" #end>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.pdf.file.types.description")</div>
+						</div>
+						<div class="field-group">
+							<label id="other-types-label" for="OTHER_TYPES">$i18n.getText("link.preview.confluence.configuration.other.file.types")<span class="aui-icon icon-required"></span></label>
+							<textarea rows="4" name="OTHER_TYPES" id="other-types" class="textarea long-field">$otherTypes</textarea>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.other.file.types.description")</div>
+						</div>
+			
+						<div class="field-group">
+							<label id="apply-css-label" for="APPLY_CSS">$i18n.getText("link.preview.confluence.configuration.apply.css")<span class="aui-icon icon-required"></span></label>
+							<textarea rows="20" style="display:none;"  class="textarea long-field" name="APPLY_CSS" id="apply-css">$applyCSS</textarea>
+					        <div id="apply-css-editor" style="height:300px;"  class="textarea long-field"></div>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.apply.css.description")</div>
+						</div>
+						<div class="field-group">
+							<label id="preview-webpages-label" for="PREVIEW_WEBPAGES">$i18n.getText("link.preview.confluence.configuration.preview.webpages")<span class="aui-icon icon-required"></span></label>
+							<input type="checkbox" name="PREVIEW_WEBPAGES" id="preview-webpages" value="$previewWebPages" #if("Y" == $previewWebPages) checked="checked" #end>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.preview.webpages.description")</div>
+						</div>
+						<div class="field-group">
+							<label id="header-color-label" for="HEADER_COLOR">$i18n.getText("link.preview.confluence.configuration.header.color")<span class="aui-icon icon-required"></span></label>
+							<input type="checkbox" name="HEADER_COLOR" id="header-color" value="$headerColor" #if("Y" == $headerColor) checked="checked" #end>
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.header.color.description")</div>
+						</div>
+						<div class="field-group">
+							<label id="show-resource-name-label" for="SHOW_RESOURCE_NAME">$i18n.getText("link.preview.confluence.configuration.show.file.name")<span class="aui-icon icon-required"></span></label>
+							<input type="checkbox" class="checkbox" name="SHOW_RESOURCE_NAME" id="show-resource-name" value="$showResourceName" #if("Y" == $showResourceName) checked="checked" #end >
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.show.file.name.description")</div>
+						</div>
+						<div class="field-group">
+							<label id="fixed-image-preview-label" for="FIXED_IMAGE_PREVIEW">$i18n.getText("link.preview.confluence.configuration.fixed.image.preview")<span class="aui-icon icon-required"></span></label>
+							<input type="checkbox" class="checkbox" name="FIXED_IMAGE_PREVIEW" id="fixed-image-preview" value="$fixedImagePreview" #if("Y" == $fixedImagePreview) checked="checked" #end >
+							<div class="description">$i18n.getText("link.preview.confluence.configuration.fixed.image.preview.description")</div>
+						</div>
+						<div class="buttons-container">
+							<div class="buttons">
+								<input value="$i18n.getText("link.preview.confluence.save")" type="submit" class="button submit">
+								<input value="$i18n.getText("link.preview.confluence.default")" name="default" id="default-button" type="button" class="button default">
+							</div>
+						</div>
+					</form>
+					<form id="restoreconfigurationform" name="restoreconfigurationform" method="POST" action="restoreSpaceConfiguration.action?key=$generalUtil.urlEncode($helper.spaceKey)" class="aui">
+					
+					</form>
+					<script>
+						AJS.$(document).ready(function() {
+	  						if("N"  == "$validLicenseKey"){
+						    	AJS.$('#apply-elements').disable();
+						    	AJS.$('#image-types').disable();		
+						    	AJS.$('#other-types').disable();
+						    	AJS.$('.ace_text-input').disable();	
+						    	AJS.$("#pdf-preview").disable();
+						    	AJS.$("#preview-webpages").disable();
+						    	AJS.$("#header-color").disable();
+						    	AJS.$("#show-resource-name").disable();
+						    	AJS.$("#fixed-image-preview").disable();
+						    	AJS.$("#click-to-preview").disable();
+						    	AJS.$("#active-configuration").disable();
+						    	
+						    	AJS.$('.ace_scroller').css("background-color","#F5F5F5");
+						    	AJS.$('.ace_content').css("cursor","not-allowed");
+						    }
+						    
+						    // remove \n from license-key
+						    AJS.$('#license-key').on( 'input', function() {
+								AJS.$('#license-key').val(AJS.$('#license-key').val().replace(new RegExp('\n+'),""));
+								
+							});
+							
+							#if($otherTypes.contains("!") || $imageTypes.contains("!"))
+								$("#aui-message-bar2").show();
+							#end
+							
+							// fade out message bar
+							AJS.$('#aui-message-bar').delay(4000).fadeOut(1000);
+						
+							AJS.$('#default-button').click(function() {
+								AJS.$('#restoreconfigurationform').submit();
+							});
+							#if($saveAction)
+								$("#aui-message-bar .aui-message").remove();
+								if(#if($messageError) true #else false #end){
+									AJS.messages.error({
+									    title: "$i18n.getText("link.preview.confluence.config.update.fail")",
+									    body: "$messageError"
+									});
+								}else{
+									AJS.messages.success({
+									    title: "$i18n.getText("link.preview.confluence.config.update.success.title")",
+									    body: "$i18n.getText("link.preview.confluence.config.update.success")"
+									});
+								}
+							#end
+							#if($restoreAction)
+								$("#aui-message-bar .aui-message").remove();
+								AJS.messages.success({
+								    title: "$i18n.getText("link.preview.confluence.config.restore.success.title")",
+								    body: "$i18n.getText("link.preview.confluence.config.restore.success")"
+								});
+							#end
+							AJS.messages.setup();
+						});
+				
+						$('input:checkbox').live('change', function(){
+					    if($(this).val()=='Y'){
+					        $(this).val('N');
+					    } else {
+					        $(this).val('Y');
+					    }
+					});
+				</script>
+            </body>
+        #end
+    #end
+</html>

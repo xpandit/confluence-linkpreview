@@ -1,0 +1,7 @@
+ace-editor-fixer.cssform.aui .textarea.ace_editor{
+	font-family: 'Monaco','Menlo','Ubuntu Mono','Consolas','source-code-pro',monospace;
+    font-size: 12px;
+    line-height: normal;
+    overflow: hidden;
+    position: relative;
+}

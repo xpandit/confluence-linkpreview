@@ -1,0 +1,38 @@
+<script type="text/javascript" src="$req.contextPath/download/resources/com.xpandit.plugins.linkpreview-confluence/js/link-preview-confluence.js?version=$VERSION"></script>
+<script type="text/javascript">	
+
+// starting the script on page load
+AJS.$(window).load(function() {
+    LinkPreview.active=false;
+    LinkPreview.contextPath = "$req.contextPath/";
+	LinkPreview.PDFViewerURL = "$req.contextPath/plugins/servlet/pdf-viewer?file=";
+	LinkPreview.applyElements = eval(AJS.$('<div/>').html("$generalUtil.unescapeCDATA($APPLY_ELEMENTS)").text().replace(/\n/g, ""));
+		
+	LinkPreview.imageTypes = eval(AJS.$('<div/>').html("$generalUtil.unescapeCDATA($IMAGE_TYPES)").text().replace(/\n/g, ""));
+	LinkPreview.pdfPreview = #if($PDF_PREVIEW == "Y") true #else false #end;
+	LinkPreview.otherTypes = eval(AJS.$('<div/>').html("$generalUtil.unescapeCDATA($OTHER_TYPES)").text().replace(/\n/g, ""));
+	LinkPreview.licenseKey="$LICENSE_KEY";
+	
+	LinkPreview.clickToPreview = #if($CLICK_TO_PREVIEW == "Y") true #else false #end;
+	
+	LinkPreview.otherCTypes = eval(AJS.$('<div/>').html("$WEBPAGES_CONTENT_TYPES_JS").text());
+	LinkPreview.imagesCTypes = eval(AJS.$('<div/>').html("$IMAGE_CONTENT_TYPES_JS").text());
+	LinkPreview.pdfCTypes = eval(AJS.$('<div/>').html("$PDF_CONTENT_TYPES_JS").text());
+	LinkPreview.previewWebPages = #if($PREVIEW_WEBPAGES == "Y") true #else false #end;
+	LinkPreview.useHeader = #if($HEADER_COLOR == "Y") true #else false #end;
+	LinkPreview.showName = #if($SHOW_RESOURCE_NAME == "Y") true #else false #end;
+	LinkPreview.fixedImagePreview = #if($FIXED_IMAGE_PREVIEW == "Y") true #else false #end;
+	
+	LinkPreview.attachments = eval(AJS.$('<div/>').html("$ATTACHMENTS").text());
+	
+	LinkPreview.process();
+	
+	$("#splitter-sidebar").bind("DOMSubtreeModified", function() {
+	console.log("Side bar new content");
+	    LinkPreview.process();
+		});
+	
+});
+
+</script>
+

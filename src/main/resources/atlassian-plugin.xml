@@ -1,0 +1,194 @@
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
+	plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+		<param name="configure.url">/admin/plugins/${atlassian.plugin.key}/adminConfiguration.action
+		</param>
+	</plugin-info>
+
+	<!-- add our i18n resource -->
+	<resource type="i18n" name="i18n" location="link-preview-confluence" />
+
+	<!-- add our web resources -->
+	<web-resource key="attachmentPreviewComponents" name="Link Preview Components">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<dependency>confluence.web.resources:ajs</dependency>
+		<resource type="download" name="link-preview-confluence-min.css"
+			location="/css/link-preview-confluence-min.css" />
+		<resource type="download" name="images/" location="/images" />
+		<context>atl.general</context>
+	</web-resource>
+
+
+	<!-- PDF.js viewer resources -->
+	<resource type="download" name="css/pdf/" location="css/pdf" />
+	<resource type="download" name="js/pdf/" location="js/pdf" />
+
+	<resource type="download" name="css/pdf/images/" location="css/pdf/images" />
+	<resource type="download" name="js/pdf/cmaps/" location="js/pdf/cmaps" />
+	<resource type="download" name="js/pdf/locale/" location="js/pdf/locale" />
+	<resource type="download" name="js/" location="js" />
+	<resource type="download" name="js/ace/editor/" location="js/ace/editor" />
+	<resource type="download" name="css/ace/editor/" location="css/ace/editor" />
+
+	<web-resource key="attachmentPreviewComponentsConfig"
+		name="Link Preview Components Configuration Resources">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<resource type="download" name="link-preview-confluence-config.js"
+			location="/js/Utils.js" />
+		<resource type="download" name="images/" location="/images" />
+		<context>confluence-image-resource-preview-config</context>
+	</web-resource>
+
+	<servlet name="PDF Viewer" key="pdf-viewer-servlet"
+		class="com.xpandit.confluence.plugins.link.preview.PDFViewerServlet">
+		<description>PDF Viewer page.</description>
+		<url-pattern>/pdf-viewer</url-pattern>
+	</servlet>
+
+	<web-panel key="attach-preview-web-panel" location="atl.general"
+		class="com.xpandit.confluence.plugins.link.preview.LinkPreviewWebPanel">
+		<resource name="view" type="velocity"
+			location="/templates/LinkPreviewWebPanel.vm" />
+	</web-panel>
+
+
+	<!-- add configuration page -->
+	<component-import key="sidebar-link-service"
+		interface="com.atlassian.confluence.plugins.ia.service.SidebarLinkService" />
+	<web-item key="link-preview-confluence-configuration" name="Configuration attachment preview"
+		section="system.admin/lookandfeel" weight="61">
+		<label key="link.preview.confluence.configuration.page.name.admin" />
+		<link linkId="link.preview.confluence.configuration">/admin/plugins/${atlassian.plugin.key}/adminConfiguration.action
+		</link>
+		<description key="link.preview.confluence.configuration.page.desc">Configuration the attachment preview.
+		</description>
+	</web-item>
+
+	<web-item key="quick-link-tools-attachment-preview" name="Space Tools attachment preview"
+		section="system.space.tools/addons" weight="100">
+		<label key="link.preview.confluence.configuration.page.name" />
+		<link linkId="link.preview.confluence.configuration.page.name.id">/spaces/${atlassian.plugin.key}/spaceConfiguration.action?key=$generalUtil.urlEncode($helper.spaceKey)
+		</link>
+		<condition
+			class="com.atlassian.confluence.plugin.descriptor.web.conditions.SpaceSidebarCondition" />
+	</web-item>
+
+	<web-item key="quick-link-admin-link-preview-confluence" name="Space Tools attachment preview"
+		section="system.space.admin/addons" weight="100">
+		<label key="link.preview.confluence.configuration.page.name" />
+		<link linkId="link.preview.confluence.configuration.page.name.id">/spaces/${atlassian.plugin.key}/spaceConfiguration.action?key=$generalUtil.urlEncode($helper.spaceKey)
+		</link>
+		<condition
+			class="com.atlassian.confluence.plugin.descriptor.web.conditions.SpaceSidebarCondition"
+			invert="true" />
+	</web-item>
+
+
+	<!-- add configuration actions -->
+	<xwork name="The link preview space actions" key="link-preview-space-actions">
+		<description>Shows space action of link preview.</description>
+		<package name="space-links-xwork-package" extends="default"
+			namespace="/spaces/${atlassian.plugin.key}">
+			<default-interceptor-ref name="validatingStack" />
+			<action name="spaceConfiguration"
+				class="com.xpandit.confluence.plugins.link.preview.SpaceConfiguration">
+				<result name="success" type="velocity">/templates/SpaceConfiguration.vm
+				</result>
+				<result name="input" type="velocity">/templates/SpaceConfiguration.vm
+				</result>
+			</action>
+			<action name="saveSpaceConfiguration"
+				class="com.xpandit.confluence.plugins.link.preview.SpaceConfiguration"
+				method="save">
+				<result name="success" type="velocity">/templates/SpaceConfiguration.vm
+				</result>
+				<result name="input" type="velocity">/templates/SpaceConfiguration.vm
+				</result>
+			</action>
+			<action name="restoreSpaceConfiguration"
+				class="com.xpandit.confluence.plugins.link.preview.SpaceConfiguration"
+				method="restore">
+				<result name="success" type="velocity">/templates/SpaceConfiguration.vm
+				</result>
+				<result name="input" type="velocity">/templates/SpaceConfiguration.vm
+				</result>
+			</action>
+		</package>
+	</xwork>
+
+	<xwork name="The link preview admin actions" key="link-preview-admin-actions">
+		<description>Shows admin action of link preview.</description>
+		<package name="admin-link-preview-confluence" extends="default"
+			namespace="/admin/plugins/${atlassian.plugin.key}">
+			<default-interceptor-ref name="validatingStack" />
+			<action name="adminConfiguration"
+				class="com.xpandit.confluence.plugins.link.preview.AdminConfiguration">
+				<result name="success" type="velocity">/templates/AdminConfiguration.vm
+				</result>
+			</action>
+			<action name="saveAdminConfiguration"
+				class="com.xpandit.confluence.plugins.link.preview.AdminConfiguration"
+				method="save">
+				<result name="success" type="velocity">/templates/AdminConfiguration.vm
+				</result>
+			</action>
+			<action name="restoreAdminConfiguration"
+				class="com.xpandit.confluence.plugins.link.preview.AdminConfiguration"
+				method="restore">
+				<result name="success" type="velocity">/templates/AdminConfiguration.vm
+				</result>
+			</action>
+		</package>
+	</xwork>
+
+
+	<!-- add active objects entities -->
+	<ao key="ao-module">
+		<description>The module configuring the Active Objects service used by
+			this plugin
+		</description>
+		<entity>com.xpandit.confluence.plugins.link.preview.ao.entity.Property
+		</entity>
+	</ao>
+
+	<!-- Jersey REST -->
+	<rest key="rest-service-resources" path="/link-preview" version="1.0">
+		<description>Provides the REST resource for raven plugin.
+		</description>
+	</rest>
+
+
+	<!-- import from the product container -->
+	<component-import key="applicationProperties"
+		interface="com.atlassian.sal.api.ApplicationProperties" />
+		<component-import key="sidManager"
+		interface="com.atlassian.confluence.core.ConfluenceSidManager" />
+	<component-import key="ao" name="Active Objects service"
+		interface="com.atlassian.activeobjects.external.ActiveObjects">
+		<description>Component to access Active Objects functionality from the
+			plugin
+		</description>
+	</component-import>
+	<component key="tx-processor" name="Transactional Annotation Processor"
+		class="com.atlassian.activeobjects.external.TransactionalAnnotationProcessor">
+		<decription>Processes @Transactional annotations.</decription>
+	</component>
+	<component-import key="user-manager" name="SAL User Manager"
+		interface="com.atlassian.sal.api.user.UserManager">
+		<description>The SAL user manager</description>
+	</component-import>
+	<component key="property-service" name="Property Service"
+		class="com.xpandit.confluence.plugins.link.preview.ao.service.impl.PropertyServiceImpl" />
+
+	<component key="contentTypeUpgradeTask" name="Content Type Upgrade Task"
+		class="com.xpandit.confluence.plugins.link.preview.upgradeTask.ContentTypeUpgradeTask"
+		public="true">
+		<interface>com.atlassian.sal.api.upgrade.PluginUpgradeTask</interface>
+	</component>
+
+</atlassian-plugin>
