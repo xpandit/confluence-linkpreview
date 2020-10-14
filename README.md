@@ -11,7 +11,7 @@ See the app documentation [here](https://confluence.xpand-it.com/display/LPC/Lin
 ## How to build the app?
 
 ### Requirements
-* Java
+* Java 8
 * Atlassian SDK
 
 ### Building
@@ -19,5 +19,5 @@ See the app documentation [here](https://confluence.xpand-it.com/display/LPC/Lin
 atlas-clean package
 ```
 
-Suggestion
+## Suggestions
 Pull Requests are most welcome.
